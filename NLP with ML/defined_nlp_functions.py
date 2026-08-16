@@ -6,6 +6,7 @@ import spacy
 
 nlp=spacy.load('en_core_web_sm')
 
+
 def clean_data(series):
     
     # Lowercasing
@@ -22,6 +23,18 @@ def clean_data(series):
 
     return output
 
+def lower_replace(series):
+    
+    # Lowercasing    
+    output = series.str.lower() 
+    
+    # Remove anything inside square brackets
+    output = output.str.replace(r'\[.*?\]', '', regex=True)
+    
+    # Remove punctuation/special characters
+    output = output.str.replace(r'[^\w\s]', '', regex=True)
+    return output
+
 def token_lemma_nonstop(text):
     
     
@@ -36,6 +49,13 @@ def pos(text,pos_list=['NOUN','PROPN','VERB','NUM','SYM',]):
     output=' '.join(output)
     return output
 
+
+def clean_and_normalize(series):
+    output = lower_replace(series)
+    output = output.apply(token_lemma_nonstop)
+    return output
+
+    
 def nlp_pipeline(series):
     
     output=clean_data(series)
